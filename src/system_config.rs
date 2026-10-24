@@ -1,8 +1,9 @@
 //! Reading the host system's DNS configuration.
 //!
 //! The source is platform-specific: `/etc/resolv.conf` on Unix, the
-//! SystemConfiguration framework on Apple platforms, the network adapters on
-//! Windows, and a Java Native Interface (JNI) call on Android. The per-platform
+//! SystemConfiguration framework on macOS, libresolv on the other Apple
+//! platforms, the network adapters on Windows, and a Java Native Interface
+//! (JNI) call on Android. The per-platform
 //! readers live in the submodules; this module dispatches to them via
 //! [`read_system`]. The [`Config`] they produce lives in [`crate::config`].
 
@@ -12,9 +13,11 @@ use super::{DnsProtocol, Nameserver, config::Config};
 
 #[cfg(any(target_os = "android", doc))]
 mod android;
-#[cfg(target_vendor = "apple")]
+#[cfg(target_os = "macos")]
 mod apple;
 mod hosts;
+#[cfg(all(target_vendor = "apple", not(target_os = "macos")))]
+mod libresolv;
 #[cfg(all(unix, not(any(target_os = "android", target_vendor = "apple"))))]
 mod unix;
 #[cfg(windows)]
@@ -24,9 +27,11 @@ mod windows;
 pub use android::install_android_jni_context;
 #[cfg(target_os = "android")]
 use android::read_system_dns;
-#[cfg(target_vendor = "apple")]
+#[cfg(target_os = "macos")]
 use apple::read_system_dns;
 pub(crate) use hosts::Hosts;
+#[cfg(all(target_vendor = "apple", not(target_os = "macos")))]
+use libresolv::read_system_dns;
 #[cfg(all(unix, not(any(target_os = "android", target_vendor = "apple"))))]
 use unix::read_system_dns;
 #[cfg(windows)]

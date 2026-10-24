@@ -10,7 +10,8 @@ yet fully-featured DNS resolver. It does not perform recursive resolution.
 ## Features
 
 - Reads the system DNS configuration on request: `/etc/resolv.conf` on Unix,
-  the SystemConfiguration framework on Apple platforms, the network adapters on
+  the SystemConfiguration framework on macOS, libresolv on iOS, tvOS, watchOS
+  and visionOS, the network adapters on
   Windows, and a JNI call on Android. The system nameservers form a primary
   tier. Behind it sits a fallback tier, either the public resolvers
   (Cloudflare, Google, Quad9) or your own, queried only when the primary tier
