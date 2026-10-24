@@ -1,9 +1,10 @@
 //! System DNS configuration from the Apple SystemConfiguration framework.
 //!
-//! Used on all Apple platforms (macOS, iOS, tvOS, watchOS). They do not keep
-//! `/etc/resolv.conf` in sync with the live resolver configuration (and on iOS
-//! the sandbox hides it entirely), so reading that file (as the generic Unix
-//! reader does) can miss the nameservers the system is actually using. Instead
+//! Used on macOS; the dynamic store is `API_UNAVAILABLE` on iOS, tvOS, watchOS
+//! and visionOS, which use [`super::libresolv`]. macOS does not keep
+//! `/etc/resolv.conf` in sync with the live resolver configuration, so reading
+//! that file (as the generic Unix reader does) can miss the nameservers the
+//! system is actually using. Instead
 //! we read the primary resolver from the dynamic store key
 //! `State:/Network/Global/DNS`, the way the old hickory-resolver path did on
 //! Apple targets. That key holds the default resolver's `ServerAddresses` and
